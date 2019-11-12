@@ -29,12 +29,15 @@ predicates
 	/*mueve(almacen,almacen)*/
 	almacen_invalido(almacen)
 	pila_invalida(pila)
+	pila_llena(pila)
 	
+	apilar(box, pila, pila)
+	ordenar_cajas(lbox, lbox)
 	
-	escribe(pila).
+	escribir(pila)
 clauses
 
-	escribe(P):-
+	escribir(P):-
 		write(P).
 	
 
@@ -44,9 +47,12 @@ clauses
   		pila_invalida(P3);
   		pila_invalida(P4);
   		pila_invalida(P5).
+  		
+  	pila_llena(p(_, Actual, Limite)):-
+  		Actual >= Limite.
   	
-  	pila_invalida(p(_, Actual, Limite)):-
-  		Actual > Limite.
+  	pila_invalida(p(Lista, Actual, Limite)):-
+  		pila_llena(p(Lista, Actual, Limite)).
   	
   	pila_invalida(p([Primera_caja|Otras_cajas], _, _)):-
   		Otras_cajas=[Segunda_caja|Pila],	
@@ -59,17 +65,47 @@ clauses
   		Primera_caja=b(Primera_ID,Primera_entrada,Primera_salida),
   		Segunda_caja=b(Segunda_ID,Segunda_entrada,Segunda_salida),
   		pila_invalida(p(Otras_cajas, Actual, Limite)).
+  		
+  	ordenar_cajas([UnaCaja],ListaOrdenada):-
+  		ListaOrdenada=[UnaCaja].
+  		
+  	ordenar_cajas([b(BID1, BIn1, BOut1)|RestoDeCajas], ListaOrdenada):-
+  		RestoDeCajas=[b(BID2, BIn2, BOut2)|OtrasCajas],
+  		BOut1 <= BOut2,
+  		ListaOrdenada=[b(BID1, BIn1, BOut1)|RestoDeCajas].
+  		
+  	ordenar_cajas([b(BID1, BIn1, BOut1)|RestoDeCajas], ListaOrdenada):-
+  		RestoDeCajas=[b(BID2, BIn2, BOut2)|OtrasCajas],
+  		BOut2 < BOut1,
+  		ListaTemp=[b(BID1, BIn1, BOut1)|OtrasCajas],
+  		ordenar_cajas(ListaTemp, ListaOrdenadaTemp),
+  		ListaOrdenada=[b(BID2, BIn2, BOut2)|ListaOrdenadaTemp].
+  		
   	
+  	apilar(b(BID1, BIn1, BOut1), p(Lista, Actual, Limite), NuevaPila):-
+  		not(pila_llena(p(Lista, Actual, Limite))),
+  		ordenar_cajas([b(BID1, BIn1, BOut1)|Lista], PilaOrdenada),
+  		NuevoActual=Actual+1,
+  		NuevaPila=p(PilaOrdenada,NuevoActual,Limite).
+  		
   		
 
 goal
 
+	/*
 	almacen_invalido(
 		alm(
-		p([b(1,1,2),b(1,1,1),b(1,1,3)],3,4),
+		p([b(1,1,1),b(1,1,2),b(1,1,3)],3,4),
 		p([b(1,2,1)],1,4),
-		p([b(1,3,1),b(1,3,2)],2,4),
+		p([b(1,3,3),b(1,3,2)],2,4),
 		p([b(1,4,1)],1,4),
 		p([b(1,5,1)],1,4)
 		)
+	).
+	*/
+
+	apilar(
+		b(104,1,4),
+		p([b(1,1,1),b(1,1,2),b(1,1,3),b(1,1,4)],3,4),
+		P
 	).
