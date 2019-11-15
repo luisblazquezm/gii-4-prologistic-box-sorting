@@ -26,35 +26,21 @@ domains
 	
 predicates
 
-	almacen_invalido(almacen)
 	pila_invalida(pila)
 	pila_llena(pila)
+	recursividad_acotada(integer)
 	
 	apilar(box,pila,pila)
-	rellenar(lbox,almacen,almacen)
+	rellenar(lbox,almacen,almacen,integer)
 	solucionar(lbox,almacen)
-	
-	escribir(pila)
+
 clauses
-
-	escribir(P):-
-		write(P).
-	
-
-  	almacen_invalido(alm(P1, P2, P3, P4, P5)):-
-  		pila_invalida(P1);
-  		pila_invalida(P2);
-  		pila_invalida(P3);
-  		pila_invalida(P4);
-  		pila_invalida(P5).
+  		
+  	recursividad_acotada(Nivel):-
+  		Nivel <= 40.
   		
   	pila_llena(p(_, Actual, Limite)):-
   		Actual >= Limite.
-  	
-  	/*
-  	pila_invalida(p(Lista, Actual, Limite)):-
-  		Actual > Limite.
-  	*/
   	
   	pila_invalida(p([Primera_caja|Otras_cajas], _, _)):-
   		not(Otras_cajas=[]),
@@ -62,14 +48,6 @@ clauses
   		Primera_caja=b(Primera_ID,Primera_entrada,Primera_salida),
   		Segunda_caja=b(Segunda_ID,Segunda_entrada,Segunda_salida),
   		Segunda_salida < Primera_salida.
-  	
-  	/*
-  	pila_invalida(p([Primera_caja|Otras_cajas], Actual, Limite)):-
-  		Otras_cajas=[Segunda_caja|Pila],	
-  		Primera_caja=b(Primera_ID,Primera_entrada,Primera_salida),
-  		Segunda_caja=b(Segunda_ID,Segunda_entrada,Segunda_salida),
-  		pila_invalida(p(Otras_cajas, Actual, Limite)).
-  	*/
   		
   	apilar(Caja,PilaActual,NuevaPila):-
   		PilaActual=p(ListaCajas,Actual,Limite),
@@ -77,43 +55,54 @@ clauses
   		NuevoActual=Actual+1,
   		NuevaPila=p([Caja|ListaCajas],NuevoActual,Limite).
   		
-  	rellenar([],Almacen,NuevoAlmacen):-
+  	rellenar([],Almacen,NuevoAlmacen,Nivel):-
+  		recursividad_acotada(Nivel),
   		Almacen=NuevoAlmacen.
  
-  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen):-
+  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar(Caja,Pila1,NuevaPila1),
   		not(pila_invalida(NuevaPila1)),
   		AlmacenTemp=alm(NuevaPila1,Pila2,Pila3,Pila4,Pila5),
-  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen).
+  		NuevoNivel=Nivel+1,
+  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
-  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen):-
+  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar(Caja,Pila2,NuevaPila2),
   		not(pila_invalida(NuevaPila2)),
   		AlmacenTemp=alm(Pila1,NuevaPila2,Pila3,Pila4,Pila5),
-  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen).
+  		NuevoNivel=Nivel+1,
+  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
-  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen):-
+  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar(Caja,Pila3,NuevaPila3),
   		not(pila_invalida(NuevaPila3)),
   		AlmacenTemp=alm(Pila1,Pila2,NuevaPila3,Pila4,Pila5),
-  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen).
+  		NuevoNivel=Nivel+1,
+  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
-  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen):-
+  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar(Caja,Pila4,NuevaPila4),
   		not(pila_invalida(NuevaPila4)),
   		AlmacenTemp=alm(Pila1,Pila2,Pila3,NuevaPila4,Pila5),
-  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen).
+  		NuevoNivel=Nivel+1,
+  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
-  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen):-
+  	rellenar([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar(Caja,Pila5,NuevaPila5),
   		not(pila_invalida(NuevaPila5)),
   		AlmacenTemp=alm(Pila1,Pila2,Pila3,Pila4,NuevaPila5),
-  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen).
+  		NuevoNivel=Nivel+1,
+  		rellenar(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
   	solucionar(ListaProd,Solucion):-
   		rellenar(
@@ -125,31 +114,10 @@ clauses
 				p([],0,4),
 				p([],0,4)
 			),
-			Solucion
+			Solucion,
+			0
 		).
 goal
-	
-	solucionar(
-		[
-			b(9,1,17),b(1,1,1),b(1,1,2),b(1,1,3)
-		],
-  		Solucion
-  	).
-	
-	
-	/*
-	almacen_invalido(
-		alm(
-		p([b(1,1,1),b(1,1,2),b(1,1,3)],3,4),
-		p([b(1,2,1)],1,4),
-		p([b(1,3,3),b(1,3,2)],2,4),
-		p([b(1,4,1)],1,4),
-		p([b(1,5,1)],1,4)
-		)
-	).
-	*/
-	
-	/*
 	solucionar(
 		[
 			b(9,1,17),b(10,1,17),b(11,1,17),
@@ -162,7 +130,27 @@ goal
 		],
   		Solucion
   	).
-  	*/
+	
+	/*
+	solucionar(
+		[
+			b(9,1,4),b(1,1,4)
+		],
+  		Solucion
+  	).
+	*/
+	
+	/*
+	almacen_invalido(
+		alm(
+		p([b(1,1,1),b(1,1,2),b(1,1,3)],3,4),
+		p([b(1,2,1)],1,4),
+		p([b(1,3,3),b(1,3,2)],2,4),
+		p([b(1,4,1)],1,4),
+		p([b(1,5,1)],1,4)
+		)
+	).
+	*/
   	
   	/*
   	solucionar(
