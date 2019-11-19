@@ -83,7 +83,7 @@ clauses
 	 * recursividad_acotada	          					      *
 	 * ========================================================================== */
   	recursividad_acotada(Nivel):-
-  		Nivel <= 16.
+  		Nivel <= 25.
   	
   	/* ========================================================================== *
 	 * pila_vacia	                					      *
@@ -125,7 +125,9 @@ clauses
   	apilar_caja_en_pila(Caja,PilaActual,NuevaPila):-
   		not(pila_llena(PilaActual)),
   		PilaActual=p(ListaCajas,Actual,Limite),
+  		write(" --------- Actual: "), write(Actual), write(" - NuevoActual: "),
   		NuevoActual=Actual+1, /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Da error en esta asignación */
+  		write(NuevoActual), write("\n"),
   		NuevaPila=p([Caja|ListaCajas],NuevoActual,Limite).
   	/* NOTA: ya he comprobado que no se debe al caso de que la pila este vacia: añadiendo
   	 *       un predicado para eso, sigue dando 'stack overflow'
@@ -140,6 +142,7 @@ clauses
 	 * En este caso, el almacen se queda como esta.
 	 */
   	colocar_cajas_en_almacen([],Almacen,NuevoAlmacen,Nivel):-
+  		write("\n --------------------- \n\n"),
   		recursividad_acotada(Nivel),
   		Almacen=NuevoAlmacen.
  
@@ -155,10 +158,13 @@ clauses
  	 *        condiciones 1 - 3. 
  	 */
   	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		write("["), write(Nivel), write("] - "), write("PILA 1"),
   		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
+  		write(" ----- LLAMO A APILAR para meter caja ["), write(Caja), write("]\n"),
   		apilar_caja_en_pila(Caja,Pila1,NuevaPila1),
   		not(pila_invalida(NuevaPila1)),
+  		write("------------ NuevaPila1: "), write(NuevaPila1), write("------------\n"),
   		AlmacenTemp=alm(NuevaPila1,Pila2,Pila3,Pila4,Pila5),
   		NuevoNivel=Nivel+1,/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   	                              No he comprobado todos los casos, pero parece que los errores
@@ -170,8 +176,10 @@ clauses
   		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
   	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		write("["), write(Nivel), write("] - "), write("PILA 2"),
   		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
+  		write(" ----- LLAMO A APILAR para meter caja ["), write(Caja), write("]\n"),
   		apilar_caja_en_pila(Caja,Pila2,NuevaPila2),
   		not(pila_invalida(NuevaPila2)),
   		AlmacenTemp=alm(Pila1,NuevaPila2,Pila3,Pila4,Pila5),
@@ -179,8 +187,10 @@ clauses
   		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
   	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		write("["), write(Nivel), write("] - "), write("PILA 3"),
   		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
+  		write(" ----- LLAMO A APILAR para meter caja ["), write(Caja), write("]\n"),
   		apilar_caja_en_pila(Caja,Pila3,NuevaPila3),
   		not(pila_invalida(NuevaPila3)),
   		AlmacenTemp=alm(Pila1,Pila2,NuevaPila3,Pila4,Pila5),
@@ -188,8 +198,10 @@ clauses
   		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
   	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		write("["), write(Nivel), write("] - "), write("PILA 4"),
   		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
+  		write(" ----- LLAMO A APILAR para meter caja ["), write(Caja), write("]\n"),
   		apilar_caja_en_pila(Caja,Pila4,NuevaPila4),
   		not(pila_invalida(NuevaPila4)),
   		AlmacenTemp=alm(Pila1,Pila2,Pila3,NuevaPila4,Pila5),
@@ -197,8 +209,10 @@ clauses
   		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
   		
   	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		write("["), write(Nivel), write("] - "), write("PILA 5"),
   		recursividad_acotada(Nivel),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
+  		write(" ----- LLAMO A APILAR para meter caja ["), write(Caja), write("]\n"),
   		apilar_caja_en_pila(Caja,Pila5,NuevaPila5),
   		not(pila_invalida(NuevaPila5)),
   		AlmacenTemp=alm(Pila1,Pila2,Pila3,Pila4,NuevaPila5),
@@ -221,8 +235,11 @@ clauses
   	 *       en el que siempre es posible colocar una caja.
   	 */
   	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
+  		write("["), write(Nivel), write("] - "), write("PILA FALLA"),
   		recursividad_acotada(Nivel),
   		Almacen=alm(_,_,_,_,Pila5),
+  		write(" ----- LLAMO A APILAR para meter caja ["), write(Caja), write("]\n"),
+  		write(" ----- Lista de Produccion: "), write(RestoCajas),
   		apilar_caja_en_pila(Caja,Pila5,NuevaPila5),
   		pila_invalida(NuevaPila5),
   		sacar_caja(Almacen,AlmacenActualizado,RestoCajas,NuevaListaProduccion),
@@ -234,6 +251,7 @@ clauses
 	 
 	/* Caso 1: si la pila esta vacia, el almacen queda en el mismo estado */
   	sacar_caja(Almacen,NuevoAlmacen,ListaProduccion,NuevaListaProduccion):-
+  		write("CASO SACAR CAJA PILA 1 [PILA VACIA]\n"),
   		Almacen=alm(Pila1,_,_,_,_),
   		pila_vacia(Pila1),
   		NuevoAlmacen=Almacen,
@@ -251,6 +269,7 @@ clauses
   	 * limite, la pila quedara vacia y siempre sera posible colocar una caja
   	 */
   	sacar_caja(Almacen,NuevoAlmacen,ListaProduccion,NuevaListaProduccion):-
+  		write("CASO SACAR CAJA PILA 1 [PILA NO VACIA]\n"),
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		Pila1=p([PrimeraCaja|RestoCajas], Actual, Limite),
   		NuevoActual=Actual-1,
@@ -297,6 +316,7 @@ goal
   	).
   	*/
 	
+	/*
 	solucionar(
 		[
 			b(9,1,17),b(10,1,17),b(11,1,17),
@@ -306,6 +326,20 @@ goal
 			b(3,1,18),b(4,1,18),b(5,1,18),
 			b(6,1,18),b(7,1,18),b(8,1,18),
 			b(1,1,19),b(2,1,19)
+		],
+  		Solucion
+  	).
+  	*/
+  	
+  	solucionar(
+		[
+			b(1,1,1),b(1,1,1),b(1,1,1),
+			b(1,1,1),b(1,1,1),b(1,1,1),
+			b(1,1,1),b(1,1,1),b(1,1,1),
+			b(1,1,1),b(1,1,1),b(1,1,1),
+			b(2,2,2),b(2,2,2),b(2,2,2),
+			b(2,2,2),b(2,2,2),b(1,1,2),
+			b(3,3,3),b(3,3,3)
 		],
   		Solucion
   	).
