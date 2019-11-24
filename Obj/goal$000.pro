@@ -27,9 +27,6 @@ predicates
 
 	/* Permite incluir un nuevo elemento de tipo 'box' AL FINAL de una lista */
 	extender_lbox_inverso(lbox,lbox,lbox)
-	
-	/* Para limitar la profundidad de las soluciones */
-	recursividad_acotada(integer)
 
 	/* Predicados de estado de la pila */
 	pila_invalida(pila)
@@ -45,7 +42,7 @@ predicates
 	 * disponible y que respete las restricciones (limite de las pilas y fechas
 	 * de salida) en el almacen.
 	 */
-	colocar_cajas_en_almacen(lbox,almacen,almacen,integer)
+	colocar_cajas_en_almacen(lbox,almacen,almacen)
 	
 	/* Sacar una caja del almacen.
 	 *
@@ -79,11 +76,6 @@ clauses
 	extender_lbox_inverso([H|Cola],Lista2,[H|NuevaCola]):-
 		extender_lbox_inverso(Cola, Lista2, NuevaCola).
   	
-  	/* ========================================================================== *
-	 * recursividad_acotada	          					      *
-	 * ========================================================================== */
-  	recursividad_acotada(Nivel):-
-  		Nivel <= 22.
   	
   	/* ========================================================================== *
 	 * pila_vacia	                					      *
@@ -139,8 +131,7 @@ clauses
 	 *
 	 * En este caso, el almacen se queda como esta.
 	 */
-  	colocar_cajas_en_almacen([],Almacen,NuevoAlmacen,Nivel):-
-  		recursividad_acotada(Nivel),
+  	colocar_cajas_en_almacen([],Almacen,NuevoAlmacen):-
   		Almacen=NuevoAlmacen.
  
  	/* Casos 1 - 5: Colocar una caja de la lista de produccion en el almacen
@@ -154,56 +145,40 @@ clauses
  	 *     4. Puedo colocar el resto de cajas siguiendo el mismo proceso y respetando las
  	 *        condiciones 1 - 3. 
  	 */
-  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
-  		recursividad_acotada(Nivel),
+  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen):-
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar_caja_en_pila(Caja,Pila1,NuevaPila1),
   		not(pila_invalida(NuevaPila1)),
   		AlmacenTemp=alm(NuevaPila1,Pila2,Pila3,Pila4,Pila5),
-  		NuevoNivel=Nivel+1,/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  	                              No he comprobado todos los casos, pero parece que los errores
-  	                              hasta nivel de recursividad 21 (incluido) ocurren en la posicion
-  	                              4437 (o cerca); he conseguido ejecuciones con limite 22 y 23 que
-  	                              dan error aqui (posicion 6199). Antes de limite 24 no encuentra
-  	                              soluciones; a partir de 24 las encuentra y el stack overflow ocurre
-  	                              en el punto indicado arriba (posicion 4437). */
-  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
+  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen).
   		
-  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
-  		recursividad_acotada(Nivel),
+  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen):-
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar_caja_en_pila(Caja,Pila2,NuevaPila2),
   		not(pila_invalida(NuevaPila2)),
   		AlmacenTemp=alm(Pila1,NuevaPila2,Pila3,Pila4,Pila5),
-  		NuevoNivel=Nivel+1,
-  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
+  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen).
   		
-  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
-  		recursividad_acotada(Nivel),
+  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen):-
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar_caja_en_pila(Caja,Pila3,NuevaPila3),
   		not(pila_invalida(NuevaPila3)),
   		AlmacenTemp=alm(Pila1,Pila2,NuevaPila3,Pila4,Pila5),
-  		NuevoNivel=Nivel+1,
-  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
+  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen).
   		
-  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
-  		recursividad_acotada(Nivel),
+  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen):-
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar_caja_en_pila(Caja,Pila4,NuevaPila4),
   		not(pila_invalida(NuevaPila4)),
   		AlmacenTemp=alm(Pila1,Pila2,Pila3,NuevaPila4,Pila5),
-  		NuevoNivel=Nivel+1,
-  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
+  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen).
   		
-  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
-  		recursividad_acotada(Nivel),
+  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen):-
   		Almacen=alm(Pila1,Pila2,Pila3,Pila4,Pila5),
   		apilar_caja_en_pila(Caja,Pila5,NuevaPila5),
   		not(pila_invalida(NuevaPila5)),
   		AlmacenTemp=alm(Pila1,Pila2,Pila3,Pila4,NuevaPila5),
-  		NuevoNivel=Nivel+1,
-  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen,NuevoNivel).
+  		colocar_cajas_en_almacen(RestoCajas,AlmacenTemp,NuevoAlmacen).
   		
   	/* Caso 6: No es posible colocar la primera caja de la lista en ninguna pila
   	 *
@@ -220,13 +195,12 @@ clauses
   	 *       del predicado 'sacar_caja'); en el caso limite, la pila queda vacia, caso
   	 *       en el que siempre es posible colocar una caja.
   	 */
-  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen,Nivel):-
-  		recursividad_acotada(Nivel),
+  	colocar_cajas_en_almacen([Caja|RestoCajas],Almacen,NuevoAlmacen):-
   		Almacen=alm(_,_,_,_,Pila5),
   		apilar_caja_en_pila(Caja,Pila5,NuevaPila5),
   		pila_invalida(NuevaPila5),
   		sacar_caja(Almacen,AlmacenActualizado,RestoCajas,NuevaListaProduccion),
-  		colocar_cajas_en_almacen([Caja|NuevaListaProduccion],AlmacenActualizado,NuevoAlmacen,Nivel).
+  		colocar_cajas_en_almacen([Caja|NuevaListaProduccion],AlmacenActualizado,NuevoAlmacen).
   	
   	/* ========================================================================== *
 	 * sacar_caja               			        		      *
@@ -265,19 +239,13 @@ clauses
 	/* El estado inicial se encuentra a nivel 0 de recursividad, y parte de un almacen
 	 * vacio.
 	 */
-  	solucionar(ListaProd,Solucion):-
+  	solucionar(ListaProd,Almacen):-
   		colocar_cajas_en_almacen(
   			ListaProd,
-  			alm(
-				p([],0,4),
-				p([],0,4),
-				p([],0,4),
-				p([],0,4),
-				p([],0,4)
-			),
-			Solucion,
-			0
-		).
+  			Almacen,
+			Solucion
+		),
+		write("\n\n"), write(Solucion), write("\n\n").
 	
 goal
 	/*solucionar([b(5,5,5),b(4,4,4),b(3,3,3),b(2,2,2),b(1,1,1)],Solucion).*/
@@ -307,5 +275,5 @@ goal
 			b(6,1,18),b(7,1,18),b(8,1,18),
 			b(1,1,19),b(2,1,19)
 		],
-  		Solucion
+  		alm(p([],0,4),p([],0,4),p([],0,4),p([],0,4),p([],0,4))
   	).
