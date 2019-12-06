@@ -245,7 +245,7 @@ clauses
   			Almacen,
 			Solucion
 		),
-		write("\n\nLa solucion es: "), write(Solucion), write("\n\n").
+		write("\n\n"), write(Solucion), write("\n\n").
 	
 goal
 	/*solucionar([b(5,5,5),b(4,4,4),b(3,3,3),b(2,2,2),b(1,1,1)],Solucion).*/
