@@ -1,5 +1,4 @@
 # prologistic-box-sorting
-Trabajo de la asignatura "Fundamentos de Sistemas Inteligentes" para el desarrollo de una solución utilizando el lenguaje PROLOG para el ordenamiento y retirada ordenada de una serie de cajas apiladas en cinco montones en un almacén
 
 ## Description
 Project based on the implementation of a solution to a problem dedicated to the sorting and extraction of a bunch of boxes in a group of stacks inside a warehouse using PROLOG language for the subject "Fundamentos de Sistemas Inteligentes" of the Computer Engineering Degree
